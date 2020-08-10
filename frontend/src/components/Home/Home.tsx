@@ -1,7 +1,7 @@
-import axios from 'axios';
 import * as React from 'react';
 import { Alert } from 'react-bootstrap';
 import { RouteComponentProps } from 'react-router-dom';
+import { DemoData } from '../../DemoData';
 import { SongData } from '../../models/SongData';
 import { StaticMix } from '../../models/StaticMix';
 import HomeNavBar from '../Nav/HomeNavBar';
@@ -246,11 +246,9 @@ class Home extends React.Component<RouteComponentProps, State> {
 
   onDynamicMixClick = (song: SongData): void => {
     if (song.dynamic && song.dynamic.status !== 'Error') {
-      // Open Mixer page in new tab
-      const win = window.open(`/mixer/${song.dynamic?.id}`, '_blank');
-      win?.focus();
+      this.props.history.push(`/mixer/${song.dynamic?.id}`);
     } else {
-      this.setState({ showDynamicMixModal: true, currentModalSrcSong: song });
+      // this.setState({ showDynamicMixModal: true, currentModalSong: song });
     }
   };
 
@@ -302,25 +300,20 @@ class Home extends React.Component<RouteComponentProps, State> {
    * Fetch song data from backend
    */
   loadData = async (): Promise<void> => {
-    axios
-      .get<SongData[]>('/api/source-track/')
-      .then(({ data }) => {
-        if (data) {
-          this.setState({ songList: data });
-        }
-      })
-      .catch(error => console.log('API errors:', error));
+    this.setState({
+      songList: DemoData,
+    });
   };
 
   componentDidMount(): void {
     this.loadData();
     // Auto-refresh data every 5 seconds
-    this.refreshInterval = setInterval(this.loadData, 5000);
+    // this.refreshInterval = setInterval(this.loadData, 5000);
   }
 
   componentWillUnmount(): void {
-    clearInterval(this.refreshInterval);
-    clearInterval(this.taskInterval);
+    // clearInterval(this.refreshInterval);
+    // clearInterval(this.taskInterval);
   }
 
   render(): JSX.Element {
@@ -360,7 +353,7 @@ class Home extends React.Component<RouteComponentProps, State> {
             {task && (
               <Alert variant="success">
                 <span>
-                  <a target="_blank" rel="noreferrer" href={`/api/mix/static/${task.id}`}>
+                  <a target="_blank" rel="noopener noreferrer" href={`/api/mix/static/${task.id}`}>
                     {task.id}
                   </a>
                   : {task.status}

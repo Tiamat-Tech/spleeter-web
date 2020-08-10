@@ -56,7 +56,7 @@ const downloadFormatter: ColumnFormatter<StaticMix> = (cell, row, rowIndex, form
   const { url } = row;
   return (
     <div className="d-flex align-items-center justify-content-end">
-      <Button variant="success" disabled={!url} href={url}>
+      <Button variant="success" disabled href={url}>
         <Download />
       </Button>
       <DeleteStaticMixButton onClick={onDeleteStaticMixClick} mix={row} />

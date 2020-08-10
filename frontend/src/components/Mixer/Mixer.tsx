@@ -7,6 +7,7 @@ import PlainNavBar from '../Nav/PlainNavBar';
 import CancelButton from './CancelButton';
 import CancelTaskModal from './CancelTaskModal';
 import MixerPlayer from './MixerPlayer';
+import { MixData } from '../../DemoData';
 
 interface MatchParams {
   mixId: string;
@@ -47,49 +48,14 @@ class Mixer extends React.Component<RouteComponentProps<MatchParams>, State> {
 
   loadData = (): void => {
     const mixId = this.getMixId();
-    axios
-      .get<DynamicMix>(`/api/mix/dynamic/${mixId}/`)
-      .then(({ data }) => {
-        if (data) {
-          this.setState({ isLoaded: true, data: data });
-          document.title = `${data.artist} - ${data.title} · Spleeter Web`;
-        }
-        if (data.error) {
-          this.setState({
-            errors: [data.error],
-          });
-        }
-        if (data.status === 'Queued' || data.status === 'In Progress') {
-          this.timeout = setTimeout(() => this.loadData(), 5000);
-        } else if (data.status === 'Done') {
-          this.setState({ showCancelTaskModal: false });
-        }
-      })
-      .catch(() => {
-        this.setState({
-          isLoaded: true,
-          errors: [`Dynamic mix ${mixId} does not exist.`],
-        });
-      });
+    this.setState({
+      isLoaded: true,
+      data: (MixData as any)[mixId],
+    });
   };
 
   cancelTask = (): void => {
-    const mixId = this.getMixId();
-    // Cancel dynamic mix task
-    axios
-      .delete(`/api/mix/dynamic/${mixId}/`)
-      .then(() => {
-        this.setState({
-          isAborted: true,
-        });
-        clearTimeout(this.timeout);
-      })
-      .catch(({ response }) => {
-        const { data } = response;
-        this.setState({
-          errors: [data.error],
-        });
-      });
+    return;
   };
 
   componentDidMount(): void {
@@ -97,7 +63,7 @@ class Mixer extends React.Component<RouteComponentProps<MatchParams>, State> {
   }
 
   componentWillUnmount(): void {
-    clearInterval(this.timeout);
+    // clearInterval(this.timeout);
   }
 
   onCancelTaskClick = (): void => {
